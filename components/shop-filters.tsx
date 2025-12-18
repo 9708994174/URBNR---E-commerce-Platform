@@ -1,16 +1,21 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Slider } from "@/components/ui/slider"
 
 interface ShopFiltersProps {
   onFilterChange?: (filters: any) => void
   onApply?: (filters: any) => void
+  priceRange?: { min: number; max: number }
 }
 
-export function ShopFilters({ onFilterChange, onApply }: ShopFiltersProps) {
+export function ShopFilters({ onFilterChange, onApply, priceRange }: ShopFiltersProps) {
+  const defaultMaxPrice = priceRange?.max || 5000
+  const defaultMinPrice = priceRange?.min || 0
+  
   const [filters, setFilters] = useState({
     deliveryTime: [] as string[],
     category: [] as string[],
@@ -21,8 +26,17 @@ export function ShopFilters({ onFilterChange, onApply }: ShopFiltersProps) {
     material: [] as string[],
     collar: [] as string[],
     sleeves: [] as string[],
-    price: { min: 0, max: 10000 },
+    price: { min: defaultMinPrice, max: defaultMaxPrice },
   })
+
+  useEffect(() => {
+    if (priceRange) {
+      setFilters((prev) => ({
+        ...prev,
+        price: { min: priceRange.min, max: priceRange.max },
+      }))
+    }
+  }, [priceRange])
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     deliveryTime: false,
@@ -43,7 +57,7 @@ export function ShopFilters({ onFilterChange, onApply }: ShopFiltersProps) {
 
   const filterOptions = {
     deliveryTime: ["1-2 Days", "3-5 Days", "5-7 Days", "7+ Days"],
-    category: ["Shirts", "T-Shirts", "Jeans", "Jackets", "Sweaters"],
+    category: ["Shirts", "T-Shirts", "Jeans", "Trousers", "Polos", "Jackets", "Sweaters"],
     size: ["XS", "S", "M", "L", "XL", "XXL"],
     color: ["Black", "White", "Blue", "Red", "Green", "Brown", "Grey", "Beige"],
     pattern: ["Solid", "Striped", "Checked", "Printed", "Plain"],
@@ -60,9 +74,7 @@ export function ShopFilters({ onFilterChange, onApply }: ShopFiltersProps) {
         ? current.filter((v) => v !== value)
         : [...current, value]
       
-      const newFilters = { ...prev, [section]: updated }
-      onFilterChange?.(newFilters)
-      return newFilters
+      return { ...prev, [section]: updated }
     })
   }
 
@@ -77,17 +89,40 @@ export function ShopFilters({ onFilterChange, onApply }: ShopFiltersProps) {
       material: [],
       collar: [],
       sleeves: [],
-      price: { min: 0, max: 10000 },
+      price: { min: defaultMinPrice, max: defaultMaxPrice },
     }
     setFilters(cleared)
-    onFilterChange?.(cleared)
+    // Don't call onFilterChange here - only on Apply button
   }
 
   const getActiveCount = () => {
-    return Object.values(filters).reduce((count, filter) => {
-      if (Array.isArray(filter)) return count + filter.length
-      return count
-    }, 0)
+    let count = 0
+    Object.values(filters).forEach((filter) => {
+      if (Array.isArray(filter)) {
+        count += filter.length
+      } else if (filter && typeof filter === 'object' && 'min' in filter && 'max' in filter) {
+        // Check if price filter is not at default values
+        if (filter.min !== defaultMinPrice || filter.max !== defaultMaxPrice) {
+          count += 1
+        }
+      }
+    })
+    return count
+  }
+
+  const handlePriceChange = (values: number[]) => {
+    const newPrice = { min: values[0], max: values[1] }
+    setFilters((prev) => ({ ...prev, price: newPrice }))
+    // Don't call onFilterChange here - only on Apply button
+  }
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price)
   }
 
   return (
@@ -97,7 +132,7 @@ export function ShopFilters({ onFilterChange, onApply }: ShopFiltersProps) {
         {getActiveCount() > 0 && (
           <button
             onClick={clearFilters}
-            className="text-xs font-bold uppercase underline"
+            className="text-xs font-bold uppercase underline cursor-pointer hover:text-black/70 transition-colors"
           >
             Clear
           </button>
@@ -110,7 +145,7 @@ export function ShopFilters({ onFilterChange, onApply }: ShopFiltersProps) {
           open={openSections[key]}
           onOpenChange={() => toggleSection(key)}
         >
-          <CollapsibleTrigger className="flex items-center justify-between w-full py-3 border-b border-black/10">
+          <CollapsibleTrigger className="flex items-center justify-between w-full py-3 border-b border-black/10 cursor-pointer hover:bg-black/5 transition-colors">
             <span className="text-sm font-bold uppercase">{key.replace(/([A-Z])/g, " $1").trim()}</span>
             {openSections[key] ? (
               <ChevronUp className="h-4 w-4" />
@@ -145,7 +180,7 @@ export function ShopFilters({ onFilterChange, onApply }: ShopFiltersProps) {
         open={openSections.price}
         onOpenChange={() => toggleSection("price")}
       >
-        <CollapsibleTrigger className="flex items-center justify-between w-full py-3 border-b border-black/10">
+        <CollapsibleTrigger className="flex items-center justify-between w-full py-3 border-b border-black/10 cursor-pointer hover:bg-black/5 transition-colors">
           <span className="text-sm font-bold uppercase">PRICE</span>
           {openSections.price ? (
             <ChevronUp className="h-4 w-4" />
@@ -153,31 +188,42 @@ export function ShopFilters({ onFilterChange, onApply }: ShopFiltersProps) {
             <ChevronDown className="h-4 w-4" />
           )}
         </CollapsibleTrigger>
-        <CollapsibleContent className="py-3 space-y-3">
-          <div className="flex gap-2">
+        <CollapsibleContent className="py-3 space-y-4">
+          <div className="space-y-3">
+            <Slider
+              value={[filters.price.min, filters.price.max]}
+              onValueChange={handlePriceChange}
+              min={defaultMinPrice}
+              max={defaultMaxPrice}
+              step={10}
+              className="w-full"
+            />
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-bold">{formatPrice(filters.price.min)}</span>
+              <span className="text-black/60">to</span>
+              <span className="font-bold">{formatPrice(filters.price.max)}</span>
+            </div>
+          </div>
+          <div className="flex gap-2 pt-2">
             <input
               type="number"
               placeholder="Min"
               value={filters.price.min}
-              onChange={(e) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  price: { ...prev.price, min: Number(e.target.value) },
-                }))
-              }
-              className="w-full border border-black/20 px-2 py-1 text-sm"
+              onChange={(e) => {
+                const min = Math.max(defaultMinPrice, Math.min(defaultMaxPrice, Number(e.target.value) || defaultMinPrice))
+                handlePriceChange([min, filters.price.max])
+              }}
+              className="w-full border border-black/20 px-2 py-1.5 text-sm rounded cursor-text"
             />
             <input
               type="number"
               placeholder="Max"
               value={filters.price.max}
-              onChange={(e) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  price: { ...prev.price, max: Number(e.target.value) },
-                }))
-              }
-              className="w-full border border-black/20 px-2 py-1 text-sm"
+              onChange={(e) => {
+                const max = Math.max(defaultMinPrice, Math.min(defaultMaxPrice, Number(e.target.value) || defaultMaxPrice))
+                handlePriceChange([filters.price.min, max])
+              }}
+              className="w-full border border-black/20 px-2 py-1.5 text-sm rounded cursor-text"
             />
           </div>
         </CollapsibleContent>

@@ -12,6 +12,8 @@ import { Heart, ShoppingCart, ArrowLeft, Minus, Plus, ZoomIn } from "lucide-reac
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import { ProductReviews } from "@/components/product-reviews"
+import { ShopHeader } from "@/components/shop-header"
+import { Footer } from "@/components/footer"
 import Image from "next/image"
 
 type Product = {
@@ -230,8 +232,11 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background w-full overflow-x-hidden">
+      <ShopHeader />
+      <div className="h-16"></div> {/* Spacer for fixed header */}
+      <div className="w-full ml-2">
+        <div className="w-full px-4 md:px-10 lg:px-16 py-8">
         <Button variant="ghost" asChild className="mb-6">
           <Link href="/shop">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -422,10 +427,12 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Product Reviews Section */}
-        <div className="mt-16 px-4">
+        <div className="mt-16">
           <ProductReviews productId={params.id as string} />
         </div>
+        </div>
       </div>
+      <Footer />
     </div>
   )
 }

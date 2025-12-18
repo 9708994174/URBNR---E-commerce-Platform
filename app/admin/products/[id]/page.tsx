@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { ArrowLeft, Package, CheckCircle, XCircle, Clock, AlertCircle, ShieldCheck } from "lucide-react"
-import { DashboardNav } from "@/components/dashboard-nav"
+import { ShopHeader } from "@/components/shop-header"
 import { Footer } from "@/components/footer"
 import { approveProduct, rejectProduct, updateProductStatus } from "@/lib/actions/admin-actions"
 import { useToast } from "@/hooks/use-toast"
@@ -201,7 +201,8 @@ export default function AdminProductDetailPage({ params }: { params: Promise<{ i
   if (isLoading) {
     return (
       <>
-        <DashboardNav />
+        <ShopHeader />
+        <div className="h-16"></div>
         <div className="min-h-screen bg-background flex items-center justify-center">
           <p className="text-muted-foreground">Loading...</p>
         </div>
@@ -212,7 +213,8 @@ export default function AdminProductDetailPage({ params }: { params: Promise<{ i
   if (!product) {
     return (
       <>
-        <DashboardNav />
+        <ShopHeader />
+        <div className="h-16"></div>
         <div className="min-h-screen bg-background flex items-center justify-center">
           <p className="text-muted-foreground">Product not found</p>
         </div>
@@ -240,7 +242,7 @@ export default function AdminProductDetailPage({ params }: { params: Promise<{ i
 
   return (
     <>
-      <DashboardNav />
+      <ShopHeader />
       <div className="min-h-screen bg-background w-full overflow-x-hidden">
         <div className="h-16"></div> {/* Spacer for fixed header */}
         <div className="bg-card border-b w-full ml-2">

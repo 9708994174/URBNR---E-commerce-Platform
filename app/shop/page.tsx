@@ -15,32 +15,56 @@ export default async function ShopPage({ searchParams }: PageProps) {
 
   const categories = [
     { name: "ALL", value: "all" },
+    { name: "OFFICE WARDROBE", value: "officewardrobe" },
+    { name: "FLANNEL CHECK SHIRTS", value: "flannel" },
+    { name: "MEDITERRANEAN MOSAIC", value: "mediterranean" },
+    { name: "TROUSERS", value: "trousers" },
+    { name: "POLOS", value: "polos" },
+    { name: "HOLIDAY FITS", value: "holiday" },
+    { name: "ESSENTIALS", value: "essentials" },
+    { name: "FOOTWEAR", value: "footwear" },
+    { name: "JUST LAUNCHED", value: "justlaunched" },
+    { name: "PLUS SIZE", value: "plussize" },
+    { name: "NEW ARRIVALS", value: "new" },
+    { name: "PRICE DROP", value: "pricedrop" },
+    { name: "SHIRTS", value: "shirt" },
+    { name: "T-SHIRTS", value: "tshirt" },
+    { name: "JEANS", value: "jeans" },
+    { name: "JACKETS", value: "jacket" },
+    { name: "SWEATERS", value: "sweater" },
     { name: "ACCESSORIES", value: "accessories" },
     { name: "TRENDING", value: "trending" },
-    { name: "SALE", value: "sale" },
-    { name: "PLUS SIZE", value: "plussize" },
     { name: "BESTSELLERS", value: "bestsellers" },
-    { name: "NEW", value: "new" },
-    { name: "SHIRTS", value: "shirt" },
-    { name: "JACKETS", value: "jacket" },
-    { name: "JEANS", value: "jeans" },
-    { name: "SWEATERS", value: "sweater" },
-    { name: "T-SHIRTS", value: "tshirt" },
+    { name: "SALE", value: "sale" },
   ]
 
   // Map category values to database categories
   const categoryMap: Record<string, string> = {
-    bestsellers: "shirt", // Map to existing category
-    new: "tshirt",
+    // Main categories
     shirt: "shirt",
-    jacket: "winterwear",
-    jeans: "jeans",
-    sweater: "winterwear",
     tshirt: "tshirt",
+    jeans: "jeans",
+    trousers: "trousers",
+    polos: "polos",
+    jacket: "winterwear",
+    sweater: "winterwear",
+    winterwear: "winterwear",
     accessories: "shoes",
-    trending: "shirt",
-    sale: "shirt",
+    footwear: "shoes",
+    shoes: "shoes",
+    // Special categories (mapped to appropriate DB categories)
+    officewardrobe: "shirt",
+    flannel: "shirt",
+    mediterranean: "shirt",
+    holiday: "shirt",
     plussize: "shirt",
+    trending: "shirt",
+    bestsellers: "shirt",
+    sale: "shirt",
+    pricedrop: "shirt",
+    essentials: "tshirt",
+    new: "tshirt",
+    justlaunched: "shoes", // Just launched is often footwear but can be featured items
   }
 
   // Build query
@@ -50,14 +74,27 @@ export default async function ShopPage({ searchParams }: PageProps) {
     query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%,category.ilike.%${search}%`)
   }
 
-  // Apply category filter
-  if (category && category !== "all" && categoryMap[category]) {
-    query = query.eq("category", categoryMap[category])
+  // Apply category filter with special handling
+  if (category && category !== "all") {
+    if (category === "justlaunched") {
+      // Just launched shows featured products
+      query = query.eq("is_featured", true)
+    } else if (category === "new") {
+      // New arrivals - already filtered, will be ordered by date
+      // No additional filter needed, just show all products ordered by date
+    } else if (category === "pricedrop" || category === "sale") {
+      // Price drop / Sale - filter by category
+      query = query.eq("category", categoryMap[category] || "shirt")
+    } else if (categoryMap[category]) {
+      // Standard category mapping
+      query = query.eq("category", categoryMap[category])
+    }
   }
 
-  const { data: products } = await query.order("is_featured", { ascending: false }).order("created_at", {
-    ascending: false,
-  })
+  // Order products: featured first, then by creation date (newest first)
+  const { data: products } = await query
+    .order("is_featured", { ascending: false })
+    .order("created_at", { ascending: false })
 
   return (
     <div className="min-h-screen bg-background w-full overflow-x-hidden">

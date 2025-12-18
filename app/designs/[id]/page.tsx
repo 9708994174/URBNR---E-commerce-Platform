@@ -55,8 +55,8 @@ export default async function DesignDetailPage({
       <ShopHeader />
       <div className="h-16"></div> {/* Spacer for fixed header */}
 
-      <main className="flex-1 py-14 px-4">
-        <div className="container mx-auto max-w-7xl">
+      <main className="flex-1 py-14 w-full ml-2">
+        <div className="w-full px-4 md:px-10 lg:px-16 max-w-7xl">
 
           {/* BACK */}
           <Link

@@ -207,17 +207,17 @@ export function ShopHeader() {
           {/* CENTER - Logo */}
           <Link
             href="/"
-            className="flex items-center gap-1.5 sm:gap-2 absolute left-1/2 transform -translate-x-1/2"
+            className="flex items-center gap-1.5 sm:gap-2 absolute left-1/2 transform -translate-x-1/2 max-w-[120px] sm:max-w-none"
             aria-label="URBNR home"
           >
-            <UrbnrLogo size={72} className="h-7 w-7 sm:h-8 sm:w-8" />
-            <span className="text-base sm:text-xl font-black uppercase tracking-[0.15em] sm:tracking-[0.25em] text-black">
+            <UrbnrLogo size={72} className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 flex-shrink-0" />
+            <span className="text-sm sm:text-base md:text-xl font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] text-black truncate">
               URBNR
             </span>
           </Link>
 
           {/* RIGHT - Search, User, Wishlist, Cart (Extreme Right) */}
-          <div className="flex items-center gap-3 sm:gap-4 pr-3 sm:pr-6 md:pr-10 lg:px-16">
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 pr-2 sm:pr-3 md:pr-6 lg:pr-10 xl:px-16">
             {/* SEARCH */}
             <form onSubmit={handleSearch} className="hidden md:flex items-center">
               <div className="relative">
