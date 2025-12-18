@@ -1,0 +1,157 @@
+import { redirect } from "next/navigation"
+import { createClient } from "@/lib/supabase/server"
+import { NavHeader } from "@/components/nav-header"
+import { Footer } from "@/components/footer"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { ArrowLeft } from "lucide-react"
+import { ApplyDesignForm } from "@/components/apply-design-form"
+
+export default async function DesignDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
+  const supabase = await createClient()
+
+  const { data: design } = await supabase
+    .from("designs")
+    .select("*")
+    .eq("id", id)
+    .single()
+
+  if (!design) redirect("/designs")
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  let userProducts: any[] = []
+  if (user) {
+    const { data } = await supabase
+      .from("products")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
+
+    userProducts = data || []
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col bg-white">
+      <NavHeader />
+
+      <main className="flex-1 py-14 px-4">
+        <div className="container mx-auto max-w-7xl">
+
+          {/* BACK */}
+          <Link
+            href="/designs"
+            className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest hover:underline mb-8"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Gallery
+          </Link>
+
+          <div className="grid lg:grid-cols-2 gap-10">
+
+            {/* IMAGE */}
+            <div className="border border-black/20">
+              <div className="aspect-square bg-neutral-100">
+                <img
+                  src={design.thumbnail_url || "/placeholder.svg"}
+                  alt={design.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+
+            {/* CONTENT */}
+            <div className="space-y-8">
+
+              {/* TITLE */}
+              <div>
+                <h1 className="text-4xl font-black uppercase tracking-tight mb-2">
+                  {design.name}
+                </h1>
+
+                <p className="text-sm uppercase tracking-widest text-black/60 max-w-xl">
+                  {design.description}
+                </p>
+
+                {design.category && (
+                  <span className="inline-block mt-4 border border-black px-3 py-1 text-xs font-black uppercase tracking-widest">
+                    {design.category}
+                  </span>
+                )}
+              </div>
+
+              {/* ACTION */}
+              {user ? (
+                <div className="border border-black/20 p-6">
+                  <h3 className="text-lg font-black uppercase mb-4">
+                    Apply this Design
+                  </h3>
+
+                  <ApplyDesignForm
+                    designId={design.id}
+                    userProducts={userProducts}
+                  />
+                </div>
+              ) : (
+                <div className="border border-black/20 p-6 space-y-4">
+                  <h3 className="text-lg font-black uppercase">
+                    Sign in to Use
+                  </h3>
+
+                  <p className="text-xs uppercase tracking-widest text-black/60">
+                    Login or create an account to apply this design
+                  </p>
+
+                  <Button
+                    asChild
+                    className="w-full bg-black text-white font-black uppercase h-11"
+                  >
+                    <Link href="/auth/signup">Create Account</Link>
+                  </Button>
+
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="w-full border-black font-black uppercase h-11"
+                  >
+                    <Link href="/auth/login">Sign In</Link>
+                  </Button>
+                </div>
+              )}
+
+              {/* DETAILS */}
+              <div className="border border-black/20 p-6 space-y-3 text-xs uppercase font-black tracking-widest">
+                <div className="flex justify-between">
+                  <span className="text-black/50">Type</span>
+                  <span>Prebuilt Template</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-black/50">Category</span>
+                  <span>{design.category || "General"}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-black/50">Customizable</span>
+                  <span>Yes</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  )
+}
