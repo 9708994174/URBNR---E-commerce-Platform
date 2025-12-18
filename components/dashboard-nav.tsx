@@ -60,7 +60,10 @@ export function DashboardNav() {
   ]
 
   if (isAdmin) {
-    navigation.push({ name: "Admin", href: "/admin", icon: ShieldCheck })
+    navigation.push({ name: "Admin", href: "/admin/products", icon: ShieldCheck })
+  } else {
+    // Show admin setup link for non-admins (they can set themselves as admin)
+    navigation.push({ name: "Admin Setup", href: "/admin/setup", icon: ShieldCheck })
   }
 
   const iconHoverClass =

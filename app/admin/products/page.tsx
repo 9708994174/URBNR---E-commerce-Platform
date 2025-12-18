@@ -2,11 +2,11 @@ import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
-import { Package } from "lucide-react"
+import { Package, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { requireAdmin } from "@/lib/auth-helpers"
-import { DashboardNav } from "@/components/dashboard-nav"
+import { ShopHeader } from "@/components/shop-header"
 import { Footer } from "@/components/footer"
 import { AdminProductActions } from "@/components/admin-product-actions"
 
@@ -83,10 +83,13 @@ export default async function AdminProductsPage({
               </Badge>
               <div className="flex gap-2">
                 {product.status !== "approved" && product.status !== "rejected" && (
-                  <AdminProductActions productId={product.id} currentStatus={product.status} />
+                  <AdminProductActions 
+                    productId={product.id} 
+                    currentStatus={product.status}
+                  />
                 )}
-                <Button size="sm" className="font-bold" asChild>
-                  <Link href={`/admin/products/${product.id}`}>Review</Link>
+                <Button size="sm" variant="outline" className="font-bold" asChild>
+                  <Link href={`/admin/products/${product.id}`}>View Details</Link>
                 </Button>
               </div>
             </div>
@@ -96,21 +99,98 @@ export default async function AdminProductsPage({
     </Card>
   )
 
+  // Double-check admin status before rendering
+  if (!profile || profile.role !== "admin") {
+    return (
+      <>
+        <ShopHeader />
+        <div className="min-h-screen bg-background w-full overflow-x-hidden">
+          <div className="h-16"></div>
+          <div className="flex items-center justify-center h-[60vh]">
+            <Card className="max-w-md">
+              <CardContent className="p-8 text-center">
+                <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-black uppercase mb-2">Access Denied</h2>
+                <p className="text-muted-foreground mb-4">
+                  You need admin privileges to access this page.
+                </p>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Current role: <strong>{profile?.role || "Not found"}</strong>
+                </p>
+                <div className="space-y-2">
+                  <Button asChild className="w-full">
+                    <Link href="/admin/setup">Set As Admin</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full">
+                    <Link href="/dashboard">Go to Dashboard</Link>
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-4">
+                  Or set your role in Supabase: <code className="bg-muted px-1 rounded">UPDATE profiles SET role = 'admin' WHERE email = 'your-email'</code>
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
-      <DashboardNav />
+      <ShopHeader />
       <div className="min-h-screen bg-background w-full overflow-x-hidden">
         <div className="h-16"></div> {/* Spacer for fixed header */}
         <header className="border-b bg-card w-full ml-2">
           <div className="w-full px-4 md:px-10 lg:px-16 py-6">
-            <h1 className="text-3xl font-black uppercase tracking-tight">Product Management</h1>
-            <p className="text-muted-foreground mt-1">Review and manage customer product submissions</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-black uppercase tracking-tight">Product Management</h1>
+                <p className="text-muted-foreground mt-1">Review and manage customer product submissions</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <Badge className="bg-blue-500 text-white px-4 py-2">
+                  Under Review: {underReviewProducts.length}
+                </Badge>
+                <Badge className="bg-yellow-500 text-white px-4 py-2">
+                  Pending: {pendingProducts.length}
+                </Badge>
+              </div>
+            </div>
           </div>
         </header>
 
         <main className="w-full px-4 md:px-10 lg:px-16 py-8 ml-2">
-          <Tabs defaultValue={params.status || "all"} className="space-y-6">
-            <TabsList>
+          {/* Summary Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-sm text-muted-foreground uppercase font-bold mb-1">Total Products</div>
+                <div className="text-2xl font-black">{allProducts?.length || 0}</div>
+              </CardContent>
+            </Card>
+            <Card className="border-yellow-500">
+              <CardContent className="p-4">
+                <div className="text-sm text-yellow-600 uppercase font-bold mb-1">Pending</div>
+                <div className="text-2xl font-black text-yellow-600">{pendingProducts.length}</div>
+              </CardContent>
+            </Card>
+            <Card className="border-blue-500">
+              <CardContent className="p-4">
+                <div className="text-sm text-blue-600 uppercase font-bold mb-1">Under Review</div>
+                <div className="text-2xl font-black text-blue-600">{underReviewProducts.length}</div>
+              </CardContent>
+            </Card>
+            <Card className="border-green-500">
+              <CardContent className="p-4">
+                <div className="text-sm text-green-600 uppercase font-bold mb-1">Approved</div>
+                <div className="text-2xl font-black text-green-600">{approvedProducts.length}</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Tabs defaultValue={params.status || "under_review"} className="space-y-6">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="all">All ({allProducts?.length || 0})</TabsTrigger>
               <TabsTrigger value="pending">Pending ({pendingProducts.length})</TabsTrigger>
               <TabsTrigger value="under_review">Under Review ({underReviewProducts.length})</TabsTrigger>

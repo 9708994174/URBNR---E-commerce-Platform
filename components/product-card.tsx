@@ -45,7 +45,7 @@ export function ProductCard({ product, isWishlisted = false }: ProductCardProps)
   }
 
   return (
-    <Link href={`/product/${product.id}`} className="group block">
+    <Link href={`/product/${product.id}`} target="_blank" rel="noopener noreferrer" className="group block">
       <div className="relative aspect-[3/4] overflow-hidden bg-muted rounded-lg mb-3">
         <Image
           src={product.image_url || "/placeholder.svg?height=600&width=450"}

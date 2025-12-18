@@ -41,3 +41,4 @@ GRANT SELECT ON public.profiles TO anon, authenticated;
 SELECT 'Foreign key relationship fixed successfully!' as result;
 
 
+

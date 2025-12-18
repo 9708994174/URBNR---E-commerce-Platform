@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import type React from "react"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, Heart, Share2 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
@@ -30,6 +31,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [shareOpen, setShareOpen] = useState(false)
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [wishlistLoading, setWishlistLoading] = useState(false)
+  const [isZoomed, setIsZoomed] = useState(false)
+  const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 })
   const router = useRouter()
 
   const productImages = [
@@ -39,6 +42,20 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     product.image_url || "/placeholder.svg",
     product.image_url || "/placeholder.svg",
   ]
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isZoomed) return
+    
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+    
+    // Clamp values to prevent zoom from going outside bounds
+    const clampedX = Math.max(0, Math.min(100, x))
+    const clampedY = Math.max(0, Math.min(100, y))
+    
+    setMousePosition({ x: clampedX, y: clampedY })
+  }
 
   const handleAddToCart = async () => {
     const supabase = createClient()
@@ -128,23 +145,53 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               {productImages.map((img, idx) => (
                 <button
                   key={idx}
-                  onClick={() => setSelectedImage(idx)}
-                  className={`relative w-16 h-20 md:w-20 md:h-24 flex-shrink-0 overflow-hidden border-2 transition ${
-                    selectedImage === idx ? "border-black" : "border-gray-200"
+                  onClick={() => {
+                    setSelectedImage(idx)
+                    setIsZoomed(false) // Reset zoom when changing image
+                  }}
+                  className={`relative w-16 h-20 md:w-20 md:h-24 flex-shrink-0 overflow-hidden border-2 transition-all cursor-pointer ${
+                    selectedImage === idx 
+                      ? "border-black scale-105 shadow-md" 
+                      : "border-gray-200 hover:border-gray-400"
                   }`}
+                  aria-label={`View product image ${idx + 1}`}
                 >
-                  <Image src={img || "/placeholder.svg"} alt={`View ${idx + 1}`} fill className="object-cover" />
+                  <Image 
+                    src={img || "/placeholder.svg"} 
+                    alt={`Product view ${idx + 1}`} 
+                    fill 
+                    className="object-cover" 
+                  />
                 </button>
               ))}
             </div>
-            <div className="relative flex-1 aspect-[3/4] bg-gray-50 overflow-hidden group cursor-zoom-in">
-              <Image
-                src={productImages[selectedImage] || "/placeholder.svg"}
-                alt={product.name}
-                fill
-                className="object-cover transition-transform duration-500 ease-out group-hover:scale-150"
-                priority
-              />
+            <div 
+              className="relative flex-1 aspect-[3/4] bg-gray-50 overflow-hidden group cursor-zoom-in"
+              onMouseEnter={() => setIsZoomed(true)}
+              onMouseLeave={() => setIsZoomed(false)}
+              onMouseMove={handleMouseMove}
+            >
+              <div className="relative w-full h-full overflow-hidden">
+                <Image
+                  src={productImages[selectedImage] || "/placeholder.svg"}
+                  alt={product.name}
+                  fill
+                  className="object-cover"
+                  style={
+                    isZoomed
+                      ? {
+                          transform: `scale(2.5)`,
+                          transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
+                          transition: "none", // No transition when zooming for smooth cursor following
+                        }
+                      : {
+                          transform: "scale(1)",
+                          transition: "transform 0.3s ease-out", // Smooth transition when zooming out
+                        }
+                  }
+                  priority
+                />
+              </div>
               <div className="absolute top-4 right-4 flex flex-col gap-2">
                 <Button
                   variant="ghost"

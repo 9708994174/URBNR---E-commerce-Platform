@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { ArrowLeft, Package, CheckCircle, XCircle, Clock, AlertCircle, ShieldCheck } from "lucide-react"
 import { DashboardNav } from "@/components/dashboard-nav"
+import { Footer } from "@/components/footer"
 import { approveProduct, rejectProduct, updateProductStatus } from "@/lib/actions/admin-actions"
 import { useToast } from "@/hooks/use-toast"
 

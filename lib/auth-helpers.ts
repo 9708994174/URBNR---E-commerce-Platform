@@ -18,15 +18,32 @@ export async function requireAdmin() {
   const supabase = await createClient()
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser()
 
-  if (!user) {
+  if (authError || !user) {
     redirect("/auth/login")
   }
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("role, email, full_name")
+    .eq("id", user.id)
+    .single()
+
+  // If profile doesn't exist, create it with admin role (for first-time admin access)
+  if (!profile && !profileError) {
+    // Try to create profile - but this shouldn't happen in normal flow
+    console.warn("Profile not found for user:", user.id)
+  }
 
   if (!profile || profile.role !== "admin") {
+    console.warn("Admin access denied:", {
+      userId: user.id,
+      userEmail: user.email,
+      profileRole: profile?.role || "not found",
+      profileError: profileError?.message,
+    })
     redirect("/dashboard")
   }
 

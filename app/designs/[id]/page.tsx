@@ -1,12 +1,13 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import { NavHeader } from "@/components/nav-header"
+import { ShopHeader } from "@/components/shop-header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { ApplyDesignForm } from "@/components/apply-design-form"
+import { SimilarDesigns } from "@/components/similar-designs"
 
 export default async function DesignDetailPage({
   params,
@@ -40,9 +41,19 @@ export default async function DesignDetailPage({
     userProducts = data || []
   }
 
+  // Fetch similar designs
+  const { data: similarDesigns } = await supabase
+    .from("designs")
+    .select("*")
+    .eq("is_prebuilt", true)
+    .eq("category", design.category || "")
+    .neq("id", design.id)
+    .limit(5)
+
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <NavHeader />
+    <div className="min-h-screen flex flex-col bg-white w-full overflow-x-hidden">
+      <ShopHeader />
+      <div className="h-16"></div> {/* Spacer for fixed header */}
 
       <main className="flex-1 py-14 px-4">
         <div className="container mx-auto max-w-7xl">
@@ -150,6 +161,11 @@ export default async function DesignDetailPage({
           </div>
         </div>
       </main>
+
+      {/* Similar Designs Section */}
+      {similarDesigns && similarDesigns.length > 0 && (
+        <SimilarDesigns currentDesignId={design.id} category={design.category || ""} />
+      )}
 
       <Footer />
     </div>

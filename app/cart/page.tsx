@@ -209,12 +209,19 @@ export default function CartPage() {
                     <img
                       src={item.product.image_url || "/placeholder.svg"}
                       alt={item.product.name}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 cursor-pointer"
                     />
                   </Link>
                 </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-lg mb-2">{item.product.name}</h3>
+                    <Link 
+                      href={`/product/${item.product.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block"
+                    >
+                      <h3 className="font-bold text-lg mb-2 hover:underline">{item.product.name}</h3>
+                    </Link>
                     <div className="flex gap-4 text-sm text-gray-600 mb-4">
                       <span>
                         {item.size} | {item.color}
@@ -263,21 +270,33 @@ export default function CartPage() {
                 </div>
 
                 <Button
-                  className="w-full h-14 bg-black hover:bg-gray-900 font-black uppercase text-base"
+                  className="w-full h-14 bg-black hover:bg-gray-900 font-black uppercase text-base mb-4"
                   onClick={handleCheckout}
                   disabled={loading}
                 >
                   PAY ₹ {calculateTotal()}
                 </Button>
+                
+                <Link href="/shop" className="block">
+                  <Button
+                    variant="outline"
+                    className="w-full h-12 border-black font-black uppercase text-base hover:bg-black hover:text-white"
+                  >
+                    Continue Shopping
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
         ) : (
-          <div className="text-center py-16">
+          <div className="text-center py-16 px-4">
             <ShoppingBag className="h-24 w-24 text-gray-300 mx-auto mb-6" />
-            <h2 className="text-2xl font-bold mb-4">Your cart is empty</h2>
+            <h2 className="text-3xl font-black uppercase mb-2">Your cart is empty</h2>
+            <p className="text-muted-foreground mb-8">Start adding items to your cart</p>
             <Link href="/shop">
-              <Button className="font-bold uppercase">Continue Shopping</Button>
+              <Button className="font-black uppercase h-14 px-8 bg-black hover:bg-black/90 text-white text-base">
+                Continue Shopping
+              </Button>
             </Link>
           </div>
         )}

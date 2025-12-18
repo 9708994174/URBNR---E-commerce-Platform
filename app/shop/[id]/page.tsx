@@ -252,13 +252,16 @@ export default function ProductDetailPage() {
                       setSelectedImageIndex(idx)
                       setIsZoomed(false) // Reset zoom when changing image
                     }}
-                    className={`relative w-16 h-20 md:w-20 md:h-24 flex-shrink-0 overflow-hidden border-2 transition-all ${
-                      selectedImageIndex === idx ? "border-black scale-105" : "border-gray-200 hover:border-gray-400"
+                    className={`relative w-16 h-20 md:w-20 md:h-24 flex-shrink-0 overflow-hidden border-2 transition-all cursor-pointer ${
+                      selectedImageIndex === idx 
+                        ? "border-black scale-105 shadow-md ring-2 ring-black/20" 
+                        : "border-gray-200 hover:border-gray-400"
                     }`}
+                    aria-label={`View product image ${idx + 1}`}
                   >
                     <Image
                       src={img || "/placeholder.svg"}
-                      alt={`View ${idx + 1}`}
+                      alt={`Product view ${idx + 1}`}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 64px, 80px"
