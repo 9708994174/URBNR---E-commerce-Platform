@@ -41,8 +41,8 @@ const heroSections: HeroSection[] = [
     subtitle: "EASY FIX, QUICK PICKS",
     link: "/shop?category=tshirt",
     images: [
-      "/hero-tshirts.jpg",
-      "/category-polos.jpg",
+      "/category-shirts.jpg",
+      "/category-trousers.jpg",
       "/images/shirt-chambray.jpg",
     ],
   },
@@ -50,7 +50,7 @@ const heroSections: HeroSection[] = [
     title: "FLANNEL CHECK SHIRTS",
     link: "/shop?category=shirt",
     images: [
-      "/hero-flannel.jpg",
+      "category-jeans.jpg",
       "/images/formal-trousers.jpg",
     ],
   },

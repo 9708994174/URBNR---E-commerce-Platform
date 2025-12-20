@@ -57,7 +57,7 @@ export function ShopFilters({ onFilterChange, onApply, priceRange }: ShopFilters
 
   const filterOptions = {
     deliveryTime: ["1-2 Days", "3-5 Days", "5-7 Days", "7+ Days"],
-    category: ["Shirts", "T-Shirts", "Jeans", "Trousers", "Polos", "Jackets", "Sweaters"],
+    category: ["Shirts", "T-Shirts", "Jeans", "Jackets", "Sweaters"],
     size: ["XS", "S", "M", "L", "XL", "XXL"],
     color: ["Black", "White", "Blue", "Red", "Green", "Brown", "Grey", "Beige"],
     pattern: ["Solid", "Striped", "Checked", "Printed", "Plain"],
