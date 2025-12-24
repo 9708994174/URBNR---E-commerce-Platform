@@ -5,6 +5,7 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+<<<<<<< HEAD
     remotePatterns: [
       {
         protocol: 'https',
@@ -15,6 +16,8 @@ const nextConfig = {
         hostname: '*.blob.vercel-storage.com',
       },
     ],
+=======
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
   },
 }
 

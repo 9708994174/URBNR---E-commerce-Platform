@@ -2,14 +2,19 @@ import { createClient } from "@/lib/supabase/server"
 import { ShopHeader } from "@/components/shop-header"
 import { ProductDetails } from "@/components/product-details"
 import { Footer } from "@/components/footer"
+<<<<<<< HEAD
 import { MobilePageHeader } from "@/components/mobile-page-header"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
+=======
+import { notFound } from "next/navigation"
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
 
 interface PageProps {
   params: Promise<{ id: string }>
 }
 
+<<<<<<< HEAD
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
   const supabase = await createClient()
@@ -27,6 +32,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
+=======
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
 export default async function ProductPage({ params }: PageProps) {
   const { id } = await params
   const supabase = await createClient()
@@ -40,11 +47,16 @@ export default async function ProductPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-background w-full overflow-x-hidden">
       <ShopHeader />
+<<<<<<< HEAD
       <div className="hidden lg:block h-16"></div> {/* Spacer for fixed header on desktop only */}
       <MobilePageHeader title={product.name} backHref="/shop" />
       <div className="pt-16 lg:pt-0 pb-8 md:pb-12">
         <ProductDetails product={product} />
       </div>
+=======
+      <div className="h-16"></div> {/* Spacer for fixed header */}
+      <ProductDetails product={product} />
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
       <Footer />
     </div>
   )

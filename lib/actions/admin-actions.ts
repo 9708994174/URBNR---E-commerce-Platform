@@ -3,12 +3,16 @@
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 
+<<<<<<< HEAD
 export async function approveProduct(
   productId: string,
   price?: number,
   notes?: string,
   customizationAmount?: number
 ) {
+=======
+export async function approveProduct(productId: string, price?: number, notes?: string) {
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
   const supabase = await createClient()
 
   try {
@@ -23,11 +27,17 @@ export async function approveProduct(
       return { success: false, error: "Unauthorized: Admin access required" }
     }
 
+<<<<<<< HEAD
     // Get product to find owner
     const { data: product } = await supabase.from("products").select("user_id").eq("id", productId).single()
 
     const updateData: any = {
       status: "approved",
+=======
+    const updateData: any = {
+      status: "approved",
+      updated_at: new Date().toISOString(),
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
     }
 
     if (price) {
@@ -38,6 +48,7 @@ export async function approveProduct(
       updateData.admin_notes = notes
     }
 
+<<<<<<< HEAD
     // Try to add customization_amount if provided
     if (customizationAmount && customizationAmount > 0) {
       updateData.customization_amount = parseFloat(customizationAmount.toString())
@@ -76,6 +87,14 @@ export async function approveProduct(
     revalidatePath("/admin/products")
     revalidatePath("/admin")
     revalidatePath("/dashboard/products")
+=======
+    const { error } = await supabase.from("products").update(updateData).eq("id", productId)
+
+    if (error) throw error
+
+    revalidatePath("/admin/products")
+    revalidatePath("/admin")
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
     return { success: true }
   } catch (error: any) {
     return { success: false, error: error.message }
@@ -101,6 +120,7 @@ export async function rejectProduct(productId: string, notes: string) {
       return { success: false, error: "Rejection notes are required" }
     }
 
+<<<<<<< HEAD
     // Get product to find owner
     const { data: product } = await supabase.from("products").select("user_id").eq("id", productId).single()
 
@@ -112,10 +132,20 @@ export async function rejectProduct(productId: string, notes: string) {
     const { error } = await supabase
       .from("products")
       .update(updateData)
+=======
+    const { error } = await supabase
+      .from("products")
+      .update({
+        status: "rejected",
+        admin_notes: notes,
+        updated_at: new Date().toISOString(),
+      })
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
       .eq("id", productId)
 
     if (error) throw error
 
+<<<<<<< HEAD
     // Create notification for product owner
     if (product?.user_id) {
       try {
@@ -135,6 +165,10 @@ export async function rejectProduct(productId: string, notes: string) {
     revalidatePath("/admin/products")
     revalidatePath("/admin")
     revalidatePath("/dashboard/products")
+=======
+    revalidatePath("/admin/products")
+    revalidatePath("/admin")
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
     return { success: true }
   } catch (error: any) {
     return { success: false, error: error.message }
@@ -158,6 +192,7 @@ export async function updateProductStatus(productId: string, status: string, not
 
     const updateData: any = {
       status,
+<<<<<<< HEAD
     }
 
     // Only add updated_at if column exists (handle gracefully)
@@ -165,6 +200,9 @@ export async function updateProductStatus(productId: string, status: string, not
       updateData.updated_at = new Date().toISOString()
     } catch (e) {
       // Ignore if column doesn't exist
+=======
+      updated_at: new Date().toISOString(),
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
     }
 
     if (notes) {

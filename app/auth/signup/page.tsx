@@ -9,7 +9,10 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+<<<<<<< HEAD
 import { useToast } from "@/hooks/use-toast"
+=======
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("")
@@ -18,9 +21,13 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+<<<<<<< HEAD
   const [isOAuthLoading, setIsOAuthLoading] = useState<string | null>(null)
   const router = useRouter()
   const { toast } = useToast()
+=======
+  const router = useRouter()
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,7 +56,11 @@ export default function SignUpPage() {
         },
       })
       if (error) throw error
+<<<<<<< HEAD
       router.push("/auth/login")
+=======
+      router.push("/auth/verify-email")
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {
@@ -57,6 +68,7 @@ export default function SignUpPage() {
     }
   }
 
+<<<<<<< HEAD
   const handleOAuthSignUp = async (provider: "google" | "apple") => {
     setIsOAuthLoading(provider)
     setError(null)
@@ -85,6 +97,8 @@ export default function SignUpPage() {
     }
   }
 
+=======
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Brand Image */}
@@ -175,12 +189,17 @@ export default function SignUpPage() {
             <Button
               type="submit"
               className="w-full h-14 bg-black hover:bg-neutral-800 text-white font-black uppercase tracking-wide text-base"
+<<<<<<< HEAD
               disabled={isLoading || isOAuthLoading !== null}
+=======
+              disabled={isLoading}
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
             >
               {isLoading ? "Creating account..." : "Create Account"}
             </Button>
           </form>
 
+<<<<<<< HEAD
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-gray-300" />
@@ -251,6 +270,8 @@ export default function SignUpPage() {
             </Button>
           </div>
 
+=======
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
           <div className="text-center">
             <p className="text-neutral-600 font-medium">
               Already have an account?{" "}

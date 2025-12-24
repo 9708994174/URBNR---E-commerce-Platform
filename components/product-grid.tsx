@@ -1,15 +1,23 @@
 "use client"
 
+<<<<<<< HEAD
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Heart, ShoppingBag, Star } from "lucide-react"
+=======
+import { useState } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Heart, ShoppingBag } from "lucide-react"
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
 import type { Product } from "@/lib/types"
 import { AuthModal } from "@/components/auth-modal"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 
+<<<<<<< HEAD
 // Product Rating Display Component
 function ProductRatingDisplay({ productId }: { productId: string }) {
   const [averageRating, setAverageRating] = useState<number | null>(null)
@@ -55,6 +63,8 @@ function ProductRatingDisplay({ productId }: { productId: string }) {
   )
 }
 
+=======
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
 interface ProductGridProps {
   products: Product[]
 }
@@ -189,7 +199,10 @@ export function ProductGrid({ products }: ProductGridProps) {
               </Link>
               <p className="text-sm text-muted-foreground capitalize">{product.category}</p>
               <p className="text-lg font-black">₹{product.price.toFixed(2)}</p>
+<<<<<<< HEAD
               <ProductRatingDisplay productId={product.id} />
+=======
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
               {product.colors && product.colors.length > 0 && (
                 <div className="flex gap-1 mt-2">
                   {product.colors.slice(0, 4).map((color, idx) => (

@@ -8,6 +8,7 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient()
+<<<<<<< HEAD
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error && data.user) {
       // Create or update user profile for OAuth users
@@ -39,6 +40,10 @@ export async function GET(request: Request) {
         console.log("Profile creation handled:", profileError)
       }
 
+=======
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    if (!error) {
+>>>>>>> 4a62e5fcd37b589bc3e624e537b2d3fd2921173c
       const forwardedHost = request.headers.get("x-forwarded-host")
       const isLocalEnv = process.env.NODE_ENV === "development"
       if (isLocalEnv) {
